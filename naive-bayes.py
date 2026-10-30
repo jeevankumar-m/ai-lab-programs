@@ -1,39 +1,44 @@
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import accuracy_score
+import math
 
-# Load dataset
-iris = load_iris()
+X = [
+    [25, 30000],
+    [30, 40000],
+    [35, 50000],
+    [40, 60000],
+    [45, 70000],
+    [50, 80000]
+]
 
-X = iris.data
-y = iris.target
+y = [0, 0, 1, 1, 1, 1]
 
-# Split dataset
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.3,
-    random_state=42
-)
+class_0 = [X[i] for i in range(len(X)) if y[i] == 0]
+class_1 = [X[i] for i in range(len(X)) if y[i] == 1]
 
-# Create classifier
-model = GaussianNB()
+def mean(values):
+    return sum(values) / len(values)
 
-# Train
-model.fit(X_train, y_train)
+def variance(values):
+    m = mean(values)
+    return sum((x - m) ** 2 for x in values) / len(values)
 
-# Predict
-y_pred = model.predict(X_test)
+def gaussian(x, m, v):
+    return (1 / math.sqrt(2 * math.pi * v)) * math.exp(
+        -((x - m) ** 2) / (2 * v)
+    )
 
-# Accuracy
-accuracy = accuracy_score(y_test, y_pred)
+def probability(data, group):
+    p = 1
+    for i in range(len(data)):
+        values = [row[i] for row in group]
+        p *= gaussian(data[i], mean(values), variance(values))
+    return p
 
-print("Predicted Values:")
-print(y_pred)
+test_data = [38, 55000]
 
-print("\nActual Values:")
-print(y_test)
+p0 = probability(test_data, class_0)
+p1 = probability(test_data, class_1)
 
-print("\nAccuracy:")
-print(accuracy)
+if p1 > p0:
+    print("Prediction: Yes")
+else:
+    print("Prediction: No")
