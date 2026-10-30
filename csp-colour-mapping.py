@@ -15,7 +15,7 @@ def is_valid(region, color):
     for neighbor in neighbors[region]:
         if neighbor in assignment and assignment[neighbor] == color:
             return False
-    return True
+    return True 
 
 def solve():
     if len(assignment) == len(regions):
